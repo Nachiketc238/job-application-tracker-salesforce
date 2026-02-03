@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <label>Student Access</label>
+    <description>Permission set for student users to access application tracking features</description>
+    
+    <!-- Object Permissions -->
+    <objectPermissions>
+        <object>Student__c</object>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    
+    <objectPermissions>
+        <object>Applicant_Name__c</object>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    
+    <objectPermissions>
+        <object>Application__c</object>
+        <allowCreate>true</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    
+    <objectPermissions>
+        <object>Job__c</object>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+    
+    <objectPermissions>
+        <object>Interview__c</object>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    
+    <objectPermissions>
+        <object>Exam__c</object>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    
+    <objectPermissions>
+        <object>Offer__c</object>
+        <allowCreate>false</allowCreate>
+        <allowDelete>false</allowDelete>
+        <allowEdit>false</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <viewAllRecords>false</viewAllRecords>
+    </objectPermissions>
+    
+    <!-- Tab Permissions -->
+    <tabSettings>
+        <tab>Student__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    
+    <tabSettings>
+        <tab>Applicant_Name__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    
+    <tabSettings>
+        <tab>Application__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    
+    <tabSettings>
+        <tab>Job__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    
+    <tabSettings>
+        <tab>Interview__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    
+    <tabSettings>
+        <tab>Exam__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    
+    <tabSettings>
+        <tab>Offer__c</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    
+</PermissionSet>

@@ -10,18 +10,14 @@
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>recipientAddresses</name>
-            <value/>
+            <value>
+                <stringValue>{!$Record.Applicant__r.Personal_Email__c}</stringValue>
+            </value>
         </inputParameters>
         <inputParameters>
             <name>senderType</name>
             <value>
-                <stringValue>OrgWideEmailAddress</stringValue>
-            </value>
-        </inputParameters>
-        <inputParameters>
-            <name>senderAddress</name>
-            <value>
-                <stringValue>nachichaudhary238@gmail.com</stringValue>
+                <stringValue>DefaultWorkflowUser</stringValue>
             </value>
         </inputParameters>
         <inputParameters>
@@ -54,7 +50,9 @@
         <flowTransactionModel>CurrentTransaction</flowTransactionModel>
         <inputParameters>
             <name>recipientAddresses</name>
-            <value/>
+            <value>
+                <stringValue>nachichaudhary238@gmail.com</stringValue>
+            </value>
         </inputParameters>
         <inputParameters>
             <name>senderType</name>
@@ -200,5 +198,5 @@
         <recordTriggerType>Update</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>
     </start>
-    <status>Active</status>
+    <status>Draft</status>
 </Flow>
