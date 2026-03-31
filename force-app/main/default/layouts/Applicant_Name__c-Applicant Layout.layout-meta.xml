@@ -40,6 +40,10 @@
                 <behavior>Edit</behavior>
                 <field>Portfolio_GitHub__c</field>
             </layoutItems>
+            <layoutItems>
+                <behavior>Edit</behavior>
+                <field>Resume_Link__c</field>
+            </layoutItems>
         </layoutColumns>
         <layoutColumns>
             <layoutItems>

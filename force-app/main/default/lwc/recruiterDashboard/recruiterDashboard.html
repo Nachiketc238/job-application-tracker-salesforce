@@ -1,0 +1,238 @@
+<template>
+    <div class="dashboard-container">
+        
+        <!-- Hero Header -->
+        <header class="dashboard-hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-eyebrow">College Hub</div>
+                    <h1 class="hero-title">Recruiter Hub</h1>
+                    <p class="hero-subtitle">Manage applicants, track hiring progress, and post new open roles instantly.</p>
+                </div>
+                
+                <!-- Header Actions -->
+                <div class="hero-actions">
+                    <div class="search-bar">
+                        <lightning-icon icon-name="utility:search" size="x-small" class="search-icon"></lightning-icon>
+                        <input type="text" placeholder="Search applicants..." value={searchKey} oninput={handleSearch} class="search-input" />
+                    </div>
+                    <button class="btn-primary" onclick={openPostModal}>
+                        <lightning-icon icon-name="utility:add" size="x-small" variant="inverse" class="slds-m-right_xx-small"></lightning-icon>
+                        <span class="btn-text">Post Job</span>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Spinners & Errors -->
+        <template if:true={isLoading}>
+            <div class="loader-overlay">
+                <lightning-spinner alternative-text="Loading" size="medium" variant="brand"></lightning-spinner>
+            </div>
+        </template>
+        
+        <template if:true={error}>
+            <div class="error-banner">
+                <lightning-icon icon-name="utility:error" size="small" variant="inverse" class="slds-m-right_x-small"></lightning-icon>
+                <div class="error-text">{error}</div>
+            </div>
+        </template>
+
+        <!-- Main Content area -->
+        <template if:false={isLoading}>
+            <div class="dashboard-body">
+                
+                <!-- KPI Metrics Grid -->
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrapper icon-open">
+                            <lightning-icon icon-name="utility:case" size="small" variant="inverse"></lightning-icon>
+                        </div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">Open Jobs</p>
+                            <p class="kpi-value">{openJobsCount}</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrapper icon-total">
+                            <lightning-icon icon-name="utility:groups" size="small" variant="inverse"></lightning-icon>
+                        </div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">Total Applicants</p>
+                            <p class="kpi-value">{totalApplications}</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrapper icon-shortlist">
+                            <lightning-icon icon-name="utility:bookmark" size="small" variant="inverse"></lightning-icon>
+                        </div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">Shortlisted</p>
+                            <p class="kpi-value">{shortlistedCount}</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrapper icon-interview">
+                            <lightning-icon icon-name="utility:event" size="small" variant="inverse"></lightning-icon>
+                        </div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">Interviews</p>
+                            <p class="kpi-value">{interviewCount}</p>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon-wrapper icon-hired">
+                            <lightning-icon icon-name="utility:success" size="small" variant="inverse"></lightning-icon>
+                        </div>
+                        <div class="kpi-content">
+                            <p class="kpi-label">Hired</p>
+                            <p class="kpi-value status-success">{hiredCount}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Job Data Accordion with Datatables -->
+                <div class="jobs-section">
+                    <template if:true={jobList.length}>
+                        <lightning-accordion allow-multiple-sections-open active-section-name={activeSections} class="custom-accordion">
+                            <template for:each={jobList} for:item="job">
+                                <lightning-accordion-section key={job.jobId} name={job.jobId} label={job.accordionLabel}>
+                                    
+                                    <template if:true={job.hasApps}>
+                                        <div class="datatable-wrapper">
+                                            <lightning-datatable
+                                                key-field="applicationId"
+                                                data={job.applications}
+                                                columns={columns}
+                                                hide-checkbox-column
+                                                onrowaction={handleRowAction}>
+                                            </lightning-datatable>
+                                        </div>
+                                    </template>
+
+                                    <template if:false={job.hasApps}>
+                                        <div class="empty-state-small">
+                                            <lightning-icon icon-name="utility:sentiment_neutral" size="medium" class="slds-m-bottom_small empty-icon"></lightning-icon>
+                                            <p>No applications found for this role yet.</p>
+                                        </div>
+                                    </template>
+
+                                </lightning-accordion-section>
+                            </template>
+                        </lightning-accordion>
+                    </template>
+
+                    <template if:false={jobList.length}>
+                        <div class="empty-state">
+                            <div class="empty-icon-wrapper">
+                                <lightning-icon icon-name="utility:cases" size="large" variant="inverse"></lightning-icon>
+                            </div>
+                            <h3>No Jobs Found</h3>
+                            <p>It looks a little quiet here. Create a new job posting to start gathering applicants.</p>
+                            <button class="btn-primary slds-m-top_medium" onclick={openPostModal}>Post your first Job</button>
+                        </div>
+                    </template>
+                </div>
+
+            </div>
+        </template>
+    </div>
+
+    <!-- ====== Post Job Modal (Premium Restyle) ====== -->
+    <template if:true={isPostModalOpen}>
+        <section role="dialog" tabindex="-1" aria-modal="true" class="custom-modal slds-fade-in-open">
+            <div class="custom-modal-container">
+                <header class="custom-modal-header">
+                    <h2>Create New Job Posting</h2>
+                    <button class="modal-close-btn" title="Close" onclick={closePostModal}>
+                        <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                    </button>
+                </header>
+                <div class="custom-modal-content">
+                    <lightning-layout multiple-rows class="modal-form-layout">
+                        <lightning-layout-item size="12" small-device-size="6" padding="around-small">
+                            <lightning-input label="Job ID/Name" name="name" value={newJob.name} required onchange={handleFieldChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="6" padding="around-small">
+                            <lightning-input label="Job Title" name="title" value={newJob.title} required onchange={handleFieldChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="6" padding="around-small">
+                            <lightning-input label="Location" name="location" value={newJob.location} active onchange={handleFieldChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="6" padding="around-small">
+                            <lightning-combobox label="Department" name="department" value={newJob.department} options={departmentOptions} onchange={handleFieldChange}></lightning-combobox>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="4" padding="around-small">
+                            <lightning-input label="Salary Range" name="salary" value={newJob.salary} onchange={handleFieldChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="4" padding="around-small">
+                            <lightning-input type="number" label="Experience (Yrs)" name="experience" value={newJob.experience} onchange={handleFieldChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="4" padding="around-small">
+                            <lightning-input type="date" label="Deadline" name="lastDate" value={newJob.lastDate} onchange={handleFieldChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" padding="around-small">
+                            <lightning-textarea label="Job Description" name="description" value={newJob.description} onchange={handleFieldChange}></lightning-textarea>
+                        </lightning-layout-item>
+                    </lightning-layout>
+                </div>
+                <footer class="custom-modal-footer">
+                    <button class="btn-secondary" onclick={closePostModal}>Cancel</button>
+                    <button class="btn-primary" onclick={submitJob} disabled={isPosting}>
+                        <template if:true={isPosting}>Posting...</template>
+                        <template if:false={isPosting}>Post Job</template>
+                    </button>
+                </footer>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open custom-backdrop" role="presentation"></div>
+    </template>
+
+    <!-- ====== Profile Viewer Modal ====== -->
+    <template if:true={isDetailModalOpen}>
+        <section role="dialog" tabindex="-1" class="custom-modal slds-fade-in-open">
+            <div class="custom-modal-container profile-modal">
+                <header class="custom-modal-header split-header">
+                    <h2>Applicant Profile</h2>
+                    <button class="modal-close-btn" onclick={closeDetailModal}>
+                        <lightning-icon icon-name="utility:close" size="small"></lightning-icon>
+                    </button>
+                </header>
+                <div class="custom-modal-content slds-p-around_large">
+                    <template if:true={selectedApp}>
+                        <div class="profile-header">
+                            <div class="profile-avatar">
+                                <lightning-icon icon-name="standard:user" size="large"></lightning-icon>
+                            </div>
+                            <div class="profile-title">
+                                <h1>{selectedApp.applicantName}</h1>
+                                <p>{selectedApp.applicantEmail} • {selectedApp.applicantPhone}</p>
+                                <span class="custom-badge status-badge">{selectedApp.status}</span>
+                            </div>
+                        </div>
+
+                        <div class="profile-skills-box">
+                            <h3>Skills & Experience</h3>
+                            <p>{selectedApp.applicantSkills}</p>
+                            <template if:false={selectedApp.applicantSkills}>
+                                <p class="empty-skills">No skills provided.</p>
+                            </template>
+                        </div>
+                        
+                        <div class="profile-actions">
+                            <template if:true={selectedApp.resumeLink}>
+                                <a href={selectedApp.resumeLink} target="_blank" class="no-underline">
+                                    <button class="btn-primary btn-full">
+                                        <lightning-icon icon-name="utility:download" size="x-small" variant="inverse" class="slds-m-right_x-small"></lightning-icon>
+                                        Download Resume
+                                    </button>
+                                </a>
+                            </template>
+                        </div>
+                    </template>
+                </div>
+            </div>
+        </section>
+        <div class="slds-backdrop slds-backdrop_open custom-backdrop" role="presentation"></div>
+    </template>
+</template>

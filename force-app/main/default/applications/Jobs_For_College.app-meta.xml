@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomApplication xmlns="http://soap.sforce.com/2006/04/metadata">
+    <brand>
+        <headerColor>#1B2A4A</headerColor>
+        <shouldOverrideOrgTheme>false</shouldOverrideOrgTheme>
+    </brand>
+    <formFactors>Small</formFactors>
+    <formFactors>Large</formFactors>
+    <isNavAutoTempTabsDisabled>false</isNavAutoTempTabsDisabled>
+    <isNavPersonalizationDisabled>false</isNavPersonalizationDisabled>
+    <isNavTabPersistenceDisabled>false</isNavTabPersistenceDisabled>
+    <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
+    <label>Jobs For College</label>
+    <navType>Standard</navType>
+    <tabs>Jobs_For_College_Home</tabs>
+    <tabs>Job__c</tabs>
+    <tabs>Application__c</tabs>
+    <tabs>Interview__c</tabs>
+    <tabs>Offer__c</tabs>
+    <uiType>Lightning</uiType>
+</CustomApplication>

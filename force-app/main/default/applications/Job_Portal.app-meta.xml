@@ -14,6 +14,7 @@
     <isOmniPinnedViewEnabled>false</isOmniPinnedViewEnabled>
     <label>Job Portal</label>
     <navType>Standard</navType>
+    <tabs>standard-home</tabs>
     <tabs>Student__c</tabs>
     <tabs>Application__c</tabs>
     <tabs>standard-Dashboard</tabs>
