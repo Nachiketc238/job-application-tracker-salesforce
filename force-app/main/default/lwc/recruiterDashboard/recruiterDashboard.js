@@ -42,7 +42,8 @@ export default class RecruiterDashboard extends LightningElement {
     // Post Job Forms
     @track newJob = {
         name: '', title: '', location: '', department: 'Computer Science', 
-        salary: '', experience: 0, description: '', lastDate: ''
+        salary: '', experience: 0, description: '', lastDate: '',
+        min10th: '', min12th: '', minCGPA: ''
     };
 
     departmentOptions = [
@@ -176,7 +177,7 @@ export default class RecruiterDashboard extends LightningElement {
     openPostModal() { this.isPostModalOpen = true; }
     closePostModal() { 
         this.isPostModalOpen = false; 
-        this.newJob = { name: '', title: '', location: '', department: '', salary: '', experience: 0, description: '', lastDate: '' };
+        this.newJob = { name: '', title: '', location: '', department: '', salary: '', experience: 0, description: '', lastDate: '', min10th: '', min12th: '', minCGPA: '' };
     }
 
     handleFieldChange(event) {
@@ -185,8 +186,14 @@ export default class RecruiterDashboard extends LightningElement {
     }
 
     async submitJob() {
-        if (!this.newJob.name || !this.newJob.title) {
-            this.toast('Validation Error', 'Job Name and Title are required.', 'error');
+        const isInputsCorrect = [...this.template.querySelectorAll('lightning-input, lightning-combobox')]
+            .reduce((validSoFar, inputField) => {
+                inputField.reportValidity();
+                return validSoFar && inputField.checkValidity();
+            }, true);
+
+        if (!isInputsCorrect) {
+            this.toast('Validation Error', 'Please fill in all required fields with valid values.', 'warning');
             return;
         }
         this.isPosting = true;
@@ -199,7 +206,10 @@ export default class RecruiterDashboard extends LightningElement {
                 description: this.newJob.description,
                 salaryRange: this.newJob.salary,
                 experience:  this.newJob.experience ? parseFloat(this.newJob.experience) : 0,
-                lastDate:    this.newJob.lastDate || null
+                lastDate:    this.newJob.lastDate || null,
+                min10th:     this.newJob.min10th ? parseFloat(this.newJob.min10th) : null,
+                min12th:     this.newJob.min12th ? parseFloat(this.newJob.min12th) : null,
+                minCGPA:     this.newJob.minCGPA ? parseFloat(this.newJob.minCGPA) : null
             });
             this.toast('Success', `Job ${this.newJob.title} posted successfully!`, 'success');
             this.closePostModal();

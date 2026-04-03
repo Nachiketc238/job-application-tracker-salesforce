@@ -59,7 +59,7 @@ private class RecruiterDashboardControllerTest {
     static void testPostJob() {
         Test.startTest();
         String jobId = RecruiterDashboardController.postJob(
-            'New Job', 'Developer', 'Remote', 'IT', 'Desc', '100k', 2, Date.today()
+            'New Job', 'Developer', 'Remote', 'IT', 'Desc', '100k', 2, Date.today(), 80.0, 80.0, 8.5
         );
         Test.stopTest();
         

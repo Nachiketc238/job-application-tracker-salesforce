@@ -29,6 +29,9 @@ public with sharing class RecruiterDashboardController {
         @AuraEnabled public String applicantPhone;
         @AuraEnabled public String applicantSkills;
         @AuraEnabled public String resumeLink;
+        @AuraEnabled public String tenthPercent;
+        @AuraEnabled public String twelfthPercent;
+        @AuraEnabled public String cgpa;
     }
 
     @AuraEnabled(cacheable=false)
@@ -52,12 +55,26 @@ public with sharing class RecruiterDashboardController {
             ORDER BY CreatedDate DESC
         ];
 
+        // --- Auto-Close Expired Jobs ---
+        List<Job__c> jobsToUpdate = new List<Job__c>();
+        for (Job__c j : jobs) {
+            if (j.Status__c == 'Open' && j.Last_Date_to_Apply__c != null && j.Last_Date_to_Apply__c < Date.today()) {
+                j.Status__c = 'Close';
+                jobsToUpdate.add(j);
+            }
+        }
+        if (!jobsToUpdate.isEmpty()) {
+            update jobsToUpdate;
+        }
+        // -------------------------------
+
         Set<Id> jobIds = new Map<Id, Job__c>(jobs).keySet();
 
         List<Application__c> allApps = [
             SELECT Id, Status__c, Job__c,
                    Applicant__r.Name, Applicant__r.Personal_Email__c,
                    Applicant__r.Phone_Number__c, Applicant__r.Skills__c,
+                   Applicant__r.X10th_Percentage__c, Applicant__r.X12th_Percentage__c, Applicant__r.CGPA__c,
                    Upload_Resume_Link__c
             FROM Application__c
             WHERE Job__c IN :jobIds
@@ -81,6 +98,9 @@ public with sharing class RecruiterDashboardController {
             d.applicantPhone = app.Applicant__r.Phone_Number__c;
             d.applicantSkills = app.Applicant__r.Skills__c;
             d.resumeLink = app.Upload_Resume_Link__c;
+            d.tenthPercent = app.Applicant__r.X10th_Percentage__c != null ? String.valueOf(app.Applicant__r.X10th_Percentage__c) : 'N/A';
+            d.twelfthPercent = app.Applicant__r.X12th_Percentage__c != null ? String.valueOf(app.Applicant__r.X12th_Percentage__c) : 'N/A';
+            d.cgpa = app.Applicant__r.CGPA__c != null ? String.valueOf(app.Applicant__r.CGPA__c) : 'N/A';
 
             if (!appsByJob.containsKey(app.Job__c)) {
                 appsByJob.put(app.Job__c, new List<ApplicationData>());
@@ -126,7 +146,8 @@ public with sharing class RecruiterDashboardController {
 
     @AuraEnabled
     public static String postJob(String jobName, String jobTitle, String location, String department,
-                                  String description, String salaryRange, Decimal experience, Date lastDate) {
+                                  String description, String salaryRange, Decimal experience, Date lastDate,
+                                  Decimal min10th, Decimal min12th, Decimal minCGPA) {
         try {
             String loggedInEmail = UserInfo.getUserEmail();
             List<Recruiter__c> recruiters = [SELECT Id FROM Recruiter__c WHERE Email__c = :loggedInEmail LIMIT 1];
@@ -141,6 +162,9 @@ public with sharing class RecruiterDashboardController {
                 Salary_Range__c = salaryRange,
                 Experience_Required__c = experience,
                 Last_Date_to_Apply__c = lastDate,
+                Min_10th_Percentage__c = min10th,
+                Min_12th_Percentage__c = min12th,
+                Min_CGPA__c = minCGPA,
                 Status__c = 'Open',
                 Recruiter__c = recruiters[0].Id
             );

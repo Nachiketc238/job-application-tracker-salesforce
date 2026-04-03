@@ -7,7 +7,7 @@ global without sharing class JobPortalAPI {
      */
     @HttpGet
     global static List<Job__c> getOpenJobs() {
-        return [SELECT Id, Name, Job_Title__c, Department__c, Location__c, Experience_Required__c, Salary_Range__c, Job_Description__c, Last_Date_to_Apply__c, Status__c 
+        return [SELECT Id, Name, Job_Title__c, Department__c, Location__c, Experience_Required__c, Salary_Range__c, Job_Description__c, Last_Date_to_Apply__c, Status__c, Min_10th_Percentage__c, Min_12th_Percentage__c, Min_CGPA__c 
                 FROM Job__c 
                 ORDER BY CreatedDate DESC
                 LIMIT 500];
@@ -27,7 +27,7 @@ global without sharing class JobPortalAPI {
             String email = (String) params.get('email');
             
             if (action == 'login') {
-                List<Applicant_Name__c> existingApplicants = [SELECT Id, Name, Resume_Link__c FROM Applicant_Name__c WHERE Personal_Email__c = :email LIMIT 1];
+                List<Applicant_Name__c> existingApplicants = [SELECT Id, Name, Resume_Link__c, X10th_Percentage__c, X12th_Percentage__c, CGPA__c FROM Applicant_Name__c WHERE Personal_Email__c = :email LIMIT 1];
                 if (!existingApplicants.isEmpty()) {
                     Applicant_Name__c existingUser = existingApplicants[0];
                     if (res != null) { res.statusCode = 200; }
@@ -36,6 +36,9 @@ global without sharing class JobPortalAPI {
                         'studentId' => existingUser.Id,
                         'studentName' => existingUser.Name,
                         'hasResume' => String.isNotBlank(existingUser.Resume_Link__c),
+                        'tenth' => existingUser.X10th_Percentage__c,
+                        'twelfth' => existingUser.X12th_Percentage__c,
+                        'cgpa' => existingUser.CGPA__c,
                         'message' => 'Login successful! Welcome back, ' + existingUser.Name
                     });
                 } else {
@@ -53,8 +56,21 @@ global without sharing class JobPortalAPI {
                 String location = (String) params.get('location');
                 String portfolio = (String) params.get('portfolio');
                 Decimal experience = null;
+                Decimal tenthPercent = null;
+                Decimal twelfthPercent = null;
+                Decimal cgpa = null;
+                
                 if (params.get('experience') != null && String.isNotBlank(String.valueOf(params.get('experience')))) {
                     try { experience = Decimal.valueOf(String.valueOf(params.get('experience'))); } catch(Exception e) {}
+                }
+                if (params.get('tenth') != null && String.isNotBlank(String.valueOf(params.get('tenth')))) {
+                    try { tenthPercent = Decimal.valueOf(String.valueOf(params.get('tenth'))); } catch(Exception e) {}
+                }
+                if (params.get('twelfth') != null && String.isNotBlank(String.valueOf(params.get('twelfth')))) {
+                    try { twelfthPercent = Decimal.valueOf(String.valueOf(params.get('twelfth'))); } catch(Exception e) {}
+                }
+                if (params.get('cgpa') != null && String.isNotBlank(String.valueOf(params.get('cgpa')))) {
+                    try { cgpa = Decimal.valueOf(String.valueOf(params.get('cgpa'))); } catch(Exception e) {}
                 }
                 
                 // check if email already exists
@@ -75,7 +91,10 @@ global without sharing class JobPortalAPI {
                     LinkedIn_Link__c = linkedin,
                     Current_Location__c = location,
                     Portfolio_GitHub__c = portfolio,
-                    Experience_Years__c = experience
+                    Experience_Years__c = experience,
+                    X10th_Percentage__c = tenthPercent,
+                    X12th_Percentage__c = twelfthPercent,
+                    CGPA__c = cgpa
                 );
                 insert newApplicant;
                 
@@ -148,13 +167,16 @@ global without sharing class JobPortalAPI {
                     jobIds.add(app.Job__c);
                 }
                 
-                Applicant_Name__c applicant = [SELECT Resume_Link__c FROM Applicant_Name__c WHERE Id = :applicantId LIMIT 1];
+                Applicant_Name__c applicant = [SELECT Resume_Link__c, X10th_Percentage__c, X12th_Percentage__c, CGPA__c FROM Applicant_Name__c WHERE Id = :applicantId LIMIT 1];
                 
                 if (res != null) { res.statusCode = 200; }
                 return JSON.serialize(new Map<String, Object>{
                     'status' => 'success',
                     'appliedJobIds' => jobIds,
-                    'hasResume' => String.isNotBlank(applicant.Resume_Link__c)
+                    'hasResume' => String.isNotBlank(applicant.Resume_Link__c),
+                    'tenth' => applicant.X10th_Percentage__c,
+                    'twelfth' => applicant.X12th_Percentage__c,
+                    'cgpa' => applicant.CGPA__c
                 });
             } else {
                 if (res != null) { res.statusCode = 400; }

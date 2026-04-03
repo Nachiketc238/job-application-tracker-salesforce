@@ -157,19 +157,28 @@
                             <lightning-input label="Job Title" name="title" value={newJob.title} required onchange={handleFieldChange}></lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item size="12" small-device-size="6" padding="around-small">
-                            <lightning-input label="Location" name="location" value={newJob.location} active onchange={handleFieldChange}></lightning-input>
+                            <lightning-input label="Location" name="location" value={newJob.location} required onchange={handleFieldChange}></lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item size="12" small-device-size="6" padding="around-small">
                             <lightning-combobox label="Department" name="department" value={newJob.department} options={departmentOptions} onchange={handleFieldChange}></lightning-combobox>
                         </lightning-layout-item>
                         <lightning-layout-item size="12" small-device-size="4" padding="around-small">
-                            <lightning-input label="Salary Range" name="salary" value={newJob.salary} onchange={handleFieldChange}></lightning-input>
+                            <lightning-input label="Salary Range" name="salary" value={newJob.salary} required onchange={handleFieldChange}></lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item size="12" small-device-size="4" padding="around-small">
                             <lightning-input type="number" label="Experience (Yrs)" name="experience" value={newJob.experience} onchange={handleFieldChange}></lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item size="12" small-device-size="4" padding="around-small">
                             <lightning-input type="date" label="Deadline" name="lastDate" value={newJob.lastDate} onchange={handleFieldChange}></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="4" padding="around-small">
+                            <lightning-input type="number" step="0.01" label="Min 10th %" name="min10th" value={newJob.min10th} onchange={handleFieldChange} required></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="4" padding="around-small">
+                            <lightning-input type="number" step="0.01" label="Min 12th %" name="min12th" value={newJob.min12th} onchange={handleFieldChange} required></lightning-input>
+                        </lightning-layout-item>
+                        <lightning-layout-item size="12" small-device-size="4" padding="around-small">
+                            <lightning-input type="number" step="0.01" label="Min CGPA" name="minCGPA" value={newJob.minCGPA} onchange={handleFieldChange} required></lightning-input>
                         </lightning-layout-item>
                         <lightning-layout-item size="12" padding="around-small">
                             <lightning-textarea label="Job Description" name="description" value={newJob.description} onchange={handleFieldChange}></lightning-textarea>
@@ -217,6 +226,15 @@
                             <template if:false={selectedApp.applicantSkills}>
                                 <p class="empty-skills">No skills provided.</p>
                             </template>
+                        </div>
+                        
+                        <div class="profile-skills-box slds-m-top_medium">
+                            <h3>Academic Scores</h3>
+                            <div style="display: flex; gap: 16px; margin-top: 8px;">
+                                <div style="flex:1;"><strong>10th:</strong> <br/>{selectedApp.tenthPercent}%</div>
+                                <div style="flex:1;"><strong>12th:</strong> <br/>{selectedApp.twelfthPercent}%</div>
+                                <div style="flex:1;"><strong>CGPA:</strong> <br/>{selectedApp.cgpa}</div>
+                            </div>
                         </div>
                         
                         <div class="profile-actions">
