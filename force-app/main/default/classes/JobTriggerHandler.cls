@@ -10,6 +10,7 @@ public with sharing class JobTriggerHandler {
      */
     public static void handleBeforeInsert(List<Job__c> newList) {
         validateLastDateToApply(newList);
+        assignDefaultRecruiter(newList);
     }
 
     /**
@@ -57,6 +58,19 @@ public with sharing class JobTriggerHandler {
                 Date lastDate = job.Last_Date_to_Apply__c.date();
                 if (lastDate < today) {
                     job.Status__c = 'Close';
+                }
+            }
+        }
+    }
+
+    private static void assignDefaultRecruiter(List<Job__c> newList) {
+        String loggedInEmail = UserInfo.getUserEmail();
+        List<Recruiter__c> recruiters = [SELECT Id FROM Recruiter__c WHERE Email__c = :loggedInEmail LIMIT 1];
+        if (!recruiters.isEmpty()) {
+            Id recruiterId = recruiters[0].Id;
+            for (Job__c job : newList) {
+                if (job.Recruiter__c == null) {
+                    job.Recruiter__c = recruiterId;
                 }
             }
         }
